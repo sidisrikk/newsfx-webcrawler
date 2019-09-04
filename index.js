@@ -38,12 +38,16 @@ var c = new Crawler({
                 // convert am/pm to 24hr
                 let tmpDatetime = tmpDuplicateTime;
                 if (tmpDatetime.match("[0-9]{1,2}:[0-9]{2}(am|pm)")) {
-                    if (tmpDatetime.substr(-2, 2) === 'pm')
-                        tmpDatetime = String((
-                            parseInt(tmpDatetime.substr(0, tmpDatetime.indexOf(":"))) + 12) % 24)
+                    if (tmpDatetime.substr(-2, 2) === 'pm') {
+                        tmpDatetime =
+                            String((parseInt(tmpDatetime.substr(0, tmpDatetime.indexOf(":"))) + 12) % 24)
                             +
                             tmpDatetime.substr(tmpDatetime.indexOf(":"));
-                    tmpDatetime = tmpDatetime.replace(/(am|nm)/,"")
+                    }
+                    if (parseInt(tmpDatetime.substr(0, tmpDatetime.indexOf(":"))) < 10) {
+                        tmpDatetime = '0' + tmpDatetime;
+                    }
+                    tmpDatetime = tmpDatetime.replace(/(am|pm)/, "")
                 }
 
                 // combine date and time into one
