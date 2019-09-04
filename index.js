@@ -21,34 +21,47 @@ var c = new Crawler({
             //a lean implementation of core jQuery designed specifically for the server
             $(".calendar__row").each(function (a, b) {
                 var date = String($('.calendar__date', b).text().trim());
-                var time = String($('.calendar__time', b).text().trim());
+                var time = String($('.calendar__time', b).text().trim()).toLocaleLowerCase();
                 var currency = String($('.currency', b).text().replace(/\n/g, '').trim());
                 var title_news = $('.calendar__event', b).text().trim();
                 var impactLevel = $('.calendar__impact span', b).attr("class");
 
                 // remember for empty time data
-                if(String(date) != "")
-                tmpDuplicateDate = date
-                if(String(time) != "")
+                if (String(date) != "")
+                    tmpDuplicateDate = date
+                if (String(time) != "")
                     tmpDuplicateTime = time
 
                 if (String(time) == "" && (String(currency) == ""))
                     return;
-                
+
+                // convert am/pm to 24hr
+                let tmpDatetime = tmpDuplicateTime;
+                if (tmpDatetime.match("[0-9]{1,2}:[0-9]{2}(am|pm)")) {
+                    if (tmpDatetime.substr(-2, 2) === 'pm')
+                        tmpDatetime = String((
+                            parseInt(tmpDatetime.substr(0, tmpDatetime.indexOf(":"))) + 12) % 24)
+                            +
+                            tmpDatetime.substr(tmpDatetime.indexOf(":"));
+                    tmpDatetime = tmpDatetime.replace(/(am|nm)/,"")
+                }
+
                 // combine date and time into one
                 const tmp = {
-                    'date': tmpDuplicateDate,
-                    'time': tmpDuplicateTime,
+                    'date': tmpDuplicateDate.split(' ')[1],
+                    'month': tmpDuplicateDate.substr(3, 3).toLowerCase(),
+                    'dayOfWeek': tmpDuplicateDate.substr(0, 3).toLowerCase(),
+                    'time': tmpDatetime,
                     'currency': currency,
                     'title_news': title_news,
                     'impactLevel': impactLevel
                 };
                 data.push(tmp)
-                console.log(tmp)      
+                console.log(tmp)
 
             });
         }
-        
+
         done();
     }
 });
