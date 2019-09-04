@@ -26,7 +26,7 @@ var c = new Crawler({
                 var title_news = $('.calendar__event', b).text().trim();
                 var impactLevel = $('.calendar__impact span', b).attr("class");
 
-                // remember for empty time data
+                // remember for next empty time data
                 if (String(date) != "")
                     tmpDuplicateDate = date
                 if (String(time) != "")
