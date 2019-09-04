@@ -1,6 +1,8 @@
 var Crawler = require("crawler");
 
 const newsForexUrl = 'https://www.forexfactory.com/calendar.php';
+
+// TODO adjust timezone later
 const TIMEZONE_SHIFT = 1 // in hour
 
 
@@ -32,7 +34,8 @@ var c = new Crawler({
 
                 if (String(time) == "" && (String(currency) == ""))
                     return;
-
+                
+                // combine date and time into one
                 const tmp = {
                     'date': tmpDuplicateDate,
                     'time': tmpDuplicateTime,
@@ -52,5 +55,3 @@ var c = new Crawler({
 
 
 c.queue(newsForexUrl);
-
-console.log(Date());
