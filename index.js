@@ -3,7 +3,7 @@ var moment = require("moment");
 
 const newsForexUrl = 'https://www.forexfactory.com/calendar.php';
 
-const TIMEZONE_SHIFT = 11 // in hour
+const TIMEZONE_DIFF = 11 // in hour
 
 
 let data = [];
@@ -45,7 +45,7 @@ var c = new Crawler({
                     const monthTmp = tmpDuplicateDate.substr(3, 3);
                     const yrsTmp = new Date().getFullYear();
                     datetimeTmp = moment(`${dayTmp}-${monthTmp}-${yrsTmp} ${timeOnlyTmp} ${ampmTmp}`, 'D-MMM-YYYY h:mm a')
-                        .add(TIMEZONE_SHIFT, 'hours').toISOString();
+                        .add(TIMEZONE_DIFF, 'hours').toISOString();
                 }
 
                 // combine date and time into one
