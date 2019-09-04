@@ -1,9 +1,9 @@
 var Crawler = require("crawler");
+var moment = require("moment");
 
 const newsForexUrl = 'https://www.forexfactory.com/calendar.php';
 
-// TODO adjust timezone later
-const TIMEZONE_SHIFT = 1 // in hour
+const TIMEZONE_SHIFT = 11 // in hour
 
 
 let data = [];
@@ -35,27 +35,22 @@ var c = new Crawler({
                 if (String(time) == "" && (String(currency) == ""))
                     return;
 
-                // convert am/pm to 24hr
-                let tmpDatetime = tmpDuplicateTime;
-                if (tmpDatetime.match("[0-9]{1,2}:[0-9]{2}(am|pm)")) {
-                    if (tmpDatetime.substr(-2, 2) === 'pm') {
-                        tmpDatetime =
-                            String((parseInt(tmpDatetime.substr(0, tmpDatetime.indexOf(":"))) + 12) % 24)
-                            +
-                            tmpDatetime.substr(tmpDatetime.indexOf(":"));
-                    }
-                    if (parseInt(tmpDatetime.substr(0, tmpDatetime.indexOf(":"))) < 10) {
-                        tmpDatetime = '0' + tmpDatetime;
-                    }
-                    tmpDatetime = tmpDatetime.replace(/(am|pm)/, "")
+
+                // parsing string
+                let datetimeTmp = time;
+                if (tmpDuplicateTime.match("[0-9]{1,2}:[0-9]{2}(am|pm)")) {
+                    const timeOnlyTmp = tmpDuplicateTime.replace(/(am|pm)/, "")
+                    const ampmTmp = tmpDuplicateTime.substr(-2, 2)
+                    const dayTmp = tmpDuplicateDate.split(' ')[1];
+                    const monthTmp = tmpDuplicateDate.substr(3, 3);
+                    const yrsTmp = new Date().getFullYear();
+                    datetimeTmp = moment(`${dayTmp}-${monthTmp}-${yrsTmp} ${timeOnlyTmp} ${ampmTmp}`, 'D-MMM-YYYY h:mm a')
+                        .add(TIMEZONE_SHIFT, 'hours').toISOString();
                 }
 
                 // combine date and time into one
                 const tmp = {
-                    'date': tmpDuplicateDate.split(' ')[1],
-                    'month': tmpDuplicateDate.substr(3, 3).toLowerCase(),
-                    'dayOfWeek': tmpDuplicateDate.substr(0, 3).toLowerCase(),
-                    'time': tmpDatetime,
+                    'time': datetimeTmp,
                     'currency': currency,
                     'title_news': title_news,
                     'impactLevel': impactLevel
